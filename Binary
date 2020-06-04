@@ -1,0 +1,130 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int typeInfo;
+typedef struct Node tree;
+struct Node
+{
+    typeInfo info;
+    tree *kiri;
+    tree *kanan;
+};
+
+void alokasi_node(typeInfo);
+void bentuk();
+void tampil();
+void preorder(tree *);
+void inorder(tree *);
+void postorder(tree *);
+
+tree *root=NULL, *baru;
+
+int main()
+{
+    printf("Pembentukan Binary Tree\n");
+    typeInfo angka;
+    char jawab;
+
+    do
+    {
+        fflush(stdin);
+        printf("info yang mau disimpan ? ");
+        scanf("%d",&angka);
+        alokasi_node(angka);
+        bentuk();
+        fflush(stdin);
+        printf("Ada info lagi ? ");
+        scanf("%c",&jawab);
+    }
+    while(jawab=='y'||jawab=='Y');
+
+    printf("Tree dikunjungi secara Preorder : ");
+    preorder(root);
+    printf("\n");
+    printf("Tree dikunjungi secara Inorder : ");
+    inorder(root);
+    printf("\n");
+    printf("Tree dikunjungi secara Postorder : ");
+    postorder(root);
+    printf("\n");
+}
+
+void alokasi_node(typeInfo angka)
+{
+    baru = (tree *)malloc(sizeof(tree));
+    if(baru==NULL)
+    {
+        printf("Malloc gagal\n");
+        exit(0);
+    }
+
+    else
+    {
+        baru->info = angka;
+        baru->kanan=NULL;
+        baru->kiri=NULL;
+    }
+}
+
+void bentuk()
+{
+    tree *p, *q;
+    if(root==NULL)
+    {
+        root=baru;
+    }
+    else
+    {
+        p = root;
+        q = root;
+        while (q!= NULL && baru->info!=p->info)
+        {
+            p=q;
+            if(baru->info < p->info)
+                q = p->kiri;
+            else
+                q = p->kanan;
+        }
+        if(baru->info==p->info)
+            printf("Ada duplikasi\n");
+        else
+        {
+
+            if(baru->info < p->info)
+                p->kiri = baru;
+            else
+                p->kanan = baru;
+        }
+
+    }
+}
+
+void inorder(tree *root)
+{
+    if(root!=NULL)
+    {
+        inorder(root->kiri);
+        printf("%d ",root->info);
+        inorder(root->kanan);
+    }
+}
+
+void postorder(tree *root)
+{
+    if(root!=NULL)
+    {
+        postorder(root->kiri);
+        postorder(root->kanan);
+        printf("%d ",root->info);
+    }
+}
+
+void preorder(tree *root)
+{
+    if(root!=NULL)
+    {
+        printf("%d ",root->info);
+        preorder(root->kiri);
+        preorder(root->kanan);
+    }
+}
