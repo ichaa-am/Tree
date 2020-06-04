@@ -1,0 +1,269 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int typeinfo;
+typedef struct node tree;
+struct node {
+    typeinfo info;
+    tree *kiri;
+    tree *kanan;
+    };
+
+void menu ();
+void alokasi();
+void bentuk();
+void cetak();
+void preorder(tree *);
+void inorder(tree *);
+void postorder(tree *);
+int cari (typeinfo);
+void hapus(typeinfo);
+void del1();
+void del2(int);
+void del3();
+void bebas();
+
+tree *root = NULL, *baru, *pos, *prev;
+
+int main()
+{
+    do{
+        menu();
+    } while (1);
+}
+
+void menu()
+{
+    int pil;
+    typeinfo data;
+    puts("Menu Binary Tree");
+    puts("1. Insert");
+    puts("2. Delete");
+    puts("3. Cari");
+    puts("4. Keluar");
+    printf("Masukkan pilihan Anda : ");
+    scanf("%d",&pil);
+    fflush(stdin);
+    switch (pil)
+    {
+    case 1:
+        printf("Data yang mau disimpan : ");
+        scanf("%d",&data);
+        fflush(stdin);
+        alokasi(data);
+        bentuk();
+        cetak();
+        break;
+    case 2:
+        printf("Data yang mau dihapus : ");
+        scanf("%d",&data);
+        fflush(stdin);
+        hapus(data);
+        cetak();
+        break;
+    case 3:
+        printf("Data yang mau dicari : ");
+        scanf("%d",&data);
+        fflush(stdin);
+        if (cari(data))
+            printf("%d ada dalam tree\n", data);
+        break;
+    default:
+        printf("Pilih menu yang tersedia !\n");
+        break;
+    default :
+        exit(0);
+        break;
+    }
+    puts("");
+}
+
+void alokasi(typeinfo data)
+{
+    baru = (tree*) malloc(sizeof(tree));
+    if (baru == NULL){
+        printf("malloc gagal");
+        exit(0);
+    }
+    baru->info = data;
+    baru->kiri = NULL;
+    baru->kanan = NULL;
+}
+
+void bentuk()
+{
+    tree *p = root, *q = root;
+    if (root == NULL)
+        root = baru;
+    else{
+        while (q != NULL && p->info != baru->info){
+            p = q;
+            if (baru->info < p->info)
+                q = p->kiri;
+            else
+                q = p->kanan;
+        }
+        if (baru->info == p->info)
+            printf("WARNING : Duplikasi %d, data tidak disimpan\n", baru->info);
+        else if (baru->info < p->info)
+            p->kiri = baru;
+        else
+            p->kanan = baru;
+    }
+}
+
+void cetak()
+{
+    printf("Tree secara preorder : ");
+    preorder(root);
+    printf("\nTree secara inorder : ");
+    inorder(root);
+    printf("\nsecara postorder : ");
+    postorder(root);
+    puts("");
+}
+
+void preorder(tree *parent)
+{
+    if (parent != NULL){
+        printf("%d ", parent->info);
+        preorder(parent->kiri);
+        preorder(parent->kanan);
+    }
+}
+
+void inorder(tree *parent)
+{
+    if (parent != NULL){
+        inorder(parent->kiri);
+        printf("%d ", parent->info);
+        inorder(parent->kanan);
+    }
+}
+
+void postorder(tree *parent)
+{
+    if (parent != NULL){
+        postorder(parent->kiri);
+        postorder(parent->kanan);
+        printf("%d ", parent->info);
+    }
+}
+
+int cari (typeinfo data)
+{
+    pos = root;
+    prev = root;
+    while (pos->info != data){
+        prev = pos;
+        if (data < prev->info){
+            if (prev->kiri != NULL)
+                pos = prev->kiri;
+            else
+                break;
+        }
+        else{
+            if (prev->kanan != NULL)
+                pos = prev->kanan;
+            else
+                break;
+        }
+    }
+    if (data == pos->info)
+        return 1;
+    else{
+        printf("%d tidak ada dalam tree\n", data);
+        return 0;
+    }
+}
+
+void hapus (typeinfo x)
+{
+    int kondisi1, kondisi2, kondisi3, kondisi4;
+    if (cari(x)){
+        kondisi1 = pos->kiri == NULL && pos->kanan == NULL;
+        kondisi2 = pos->kiri != NULL && pos->kanan == NULL;
+        kondisi3 = pos->kiri == NULL && pos->kanan != NULL;
+        kondisi4 = pos->kiri != NULL && pos->kanan != NULL;
+        if (kondisi1)
+            del1(x);
+        else if (kondisi2 || kondisi3)
+            del2();
+        else if (kondisi4)
+            del3();
+        bebas();
+    }
+}
+
+void del1()
+{
+    if (root != NULL && pos == root)
+        root = NULL;
+    else if (prev->kanan != NULL && pos == prev->kanan)
+        prev->kanan = NULL;
+    else
+        prev->kiri = NULL;
+}
+
+void del2(int cond2)
+{
+    if (cond2){
+        if (root != NULL && pos == root)
+            root = pos->kiri;
+        else if (prev->kanan != NULL && pos == prev->kanan)
+            prev->kanan = pos->kiri;
+        else
+            prev->kiri = pos->kiri;
+    }
+    else{
+        if (root != NULL && pos == root)
+            root = pos->kanan;
+        else if (prev->kanan != NULL && pos == prev->kanan)
+            prev->kanan = pos->kanan;
+        else
+            prev->kiri = pos->kanan;
+    }
+}
+
+void del3()
+{
+    if (prev->kanan != NULL && pos == prev->kanan){
+        sub = pos->kanan;
+        if (sub->kiri != NULL){
+            while (sub->kiri != NULL){
+                subprev = sub;
+                sub = sub->kiri;
+            }
+            if (sub->kanan != NULL)
+                subprev->kiri = sub->kanan;
+        }
+        prev->kanan = sub;
+        if (sub->kiri != NULL)
+            sub->kanan = pos->kanan;
+        sub->kiri = pos->kiri;
+    }
+    else{
+        sub = pos->kiri;
+        if (sub->kanan != NULL){
+            while (sub->kanan != NULL){
+                subprev = sub;
+                sub = sub->kanan;
+            }
+            if (sub->kiri != NULL)
+                subprev->kanan = sub->kiri;
+        }
+        if (root != NULL && pos == root)
+            root = sub;
+        else
+            prev->kiri = sub;
+        if (sub->kanan != NULL)
+            sub->kiri = pos->kiri;
+        sub->kanan = pos->kanan;
+    }
+}
+
+void bebas()
+{
+    free(pos);
+    pos = NULL;
+}
